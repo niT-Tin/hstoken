@@ -98,8 +98,8 @@ graph LR
     H -- other --> K([FLOAT])
     D -- 0-9 --> H
     D -- other --> L([error])
-    B -- 1-9 --> M([7])
-    M -- 0-9 --> M
+    B -- 1-7 --> M([7])
+    M -- 0-7 --> M
     B -- . --> D
     M -- other --> O([OCT])
     M -- . --> P([error])
