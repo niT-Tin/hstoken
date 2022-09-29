@@ -26,22 +26,22 @@ pub struct Assistant;
 
 impl Assistant {
     // 判断字符是否为数字
-    pub fn is_number(&self, src: char) -> bool {
+    pub fn is_number(&self, src: &char) -> bool {
         RENUMBER.is_match(&src.to_string())
     }
 
     // 判断字符是否为字符
-    pub fn is_letter(&self, src: char) -> bool {
+    pub fn is_letter(&self, src: &char) -> bool {
         RELETTER.is_match(&src.to_string())
     }
 
     // 判读字符是否为字面值
-    pub fn is_literal(&self, src: char) -> bool {
+    pub fn is_literal(&self, src: &char) -> bool {
         RELITERAL.is_match(&src.to_string())
     }
 
     // 判读字符是否为操作符
-    pub fn is_operator(&self, src: char) -> bool {
+    pub fn is_operator(&self, src: &char) -> bool {
         REOPERATOR.is_match(&src.to_string())
     }
 }
