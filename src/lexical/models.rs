@@ -80,20 +80,28 @@ impl Tokens::Token {
     /*
      * 从源代码构造变量或者关键字
      */
-    fn make_var_keyword(src: &Vec<char>) -> Tokens::Token {}
+    fn make_var_keyword(src: &Vec<char>) -> Tokens::Token {
+        Tokens::Token{ ttype: TP::BOOLEAN, tvalue: String::from("") }
+    }
 
     /*
      * 从源代码构造字符串
      */
-    fn make_string(src: &Vec<char>) -> Tokens::Token {}
+    fn make_string(src: &Vec<char>) -> Tokens::Token {
+        Tokens::Token{ ttype: TP::BOOLEAN, tvalue: String::from("") }
+    }
 
     /*
      * 从源代码构造操作符
      */
-    fn make_operator(src: &Vec<char>) -> Tokens::Token {}
+    fn make_operator(src: &Vec<char>) -> Tokens::Token {
+        Tokens::Token{ ttype: TP::BOOLEAN, tvalue: String::from("") }
+    }
 
     /*
      * 从源代码构造数字
      */
-    fn make_number(src: &Vec<char>) -> Tokens::Token {}
+    fn make_number(src: &Vec<char>) -> Tokens::Token {
+        Tokens::Token{ ttype: TP::BOOLEAN, tvalue: String::from("") }
+    }
 }
