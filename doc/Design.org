@@ -81,13 +81,15 @@ graph LR
 [[file:operator.png]]
 *** 数字状态机图
 #+begin_src mermaid :file number.png
-graph LR
+ graph LR
     A -- 1-9 --> E([4])
     A -- + --> C([2])
     A([0]) -- 0 --> B([1])
     A -- - --> C
     A -- . --> D([3])
     B -- 0 --> B
+    B -- "other NaN" --> O
+    B -- "other num not in 1-7" --> a([error])
     E -- 0-9 --> E
     E -- . --> F([5])
     E -- other --> U([INTEGER])
@@ -106,7 +108,8 @@ graph LR
     B -- x --> R([9])
     R -- 0-9A-F --> R
     R -- . --> S([error])
-    R -- other --> T([HEX])
+    R -- "other NaN" --> T([HEX])
+    R -- "other num not in 09za" --> b([error])
     C -- 1-9 --> E
     C -- other --> V([error])
     C -- 0 --> B
