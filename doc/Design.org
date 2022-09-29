@@ -1,0 +1,118 @@
+#+title: HScript设计
+* HScript
+Rust 实现基础语法以及虚拟机部分，对应文本编辑器后期也使用 Rust 实现
+** 确定有穷自动状态机设计
+*** 变量或者关键字状态机图
+#+begin_src mermaid :file var_keyword.png
+graph LR
+    A([0]) -- _a-zA-Z -->B([1])
+    B -- other --> C([token])
+    B -- _0-9a-zA-Z --> D([2])
+    D -- _0-9a-zA-Z --> D
+    D -- other --> E([token])
+    E --> F([变量])
+    E --> G([关键字])
+#+end_src
+
+#+RESULTS:
+[[file:var_keyword.png]]
+*** 字符串状态机图
+#+begin_src mermaid :file string.png
+graph LR
+    A([0]) -- ' --> B([1])
+    B -- other --> B
+    A -- "&quot" --> C([2])
+    C -- other --> C
+    B -- ' --> D([token])
+    C -- "&quot" --> D
+#+end_src
+
+#+RESULTS:
+[[file:string.png]]
+*** 运算符状态机图
+#+begin_src mermaid :file operator.png
+graph LR
+    A([0]) --> B([,])
+    A --> C([";"])
+    A -- + --> D([1])
+    A -- "-" --> E([2])
+    A -- * --> F([3])
+    A -- / --> G([4])
+    A -- ! --> H([5])
+    A -- = --> I([6])
+    A -- < --> J([7])
+    A -- > --> K([8])
+    A -- % --> L([9])
+    A -- ^ --> M([10])
+    A -- "|" --> N([11])
+    D -- other --> O([+])
+    D -- + --> f([++])
+    D -- = --> P([+=])
+    E -- other --> Q([-])
+    E -- "-" --> g([--])
+    E -- = --> R([-=])
+    F -- other --> S([*])
+    F -- = --> T([*=])
+    G -- other --> U(["/"])
+    G -- = --> V([/=])
+    H -- other --> W(["!"])
+    H -- ^ --> s([!^])
+    H -- = --> X([!=])
+    I -- other --> Z([=])
+    I -- = --> a([==])
+    J -- other --> b([<])
+    J -- < --> j([<<])
+    J -- > --> k([<>])
+    J -- = --> c([<=])
+    K -- other --> d([>])
+    K -- > --> l([>>])
+    K -- = --> e([>=])
+    L -- other --> h(["%"])
+    L -- = --> i([%=])
+    M -- other --> m([^])
+    M -- = --> n([^=])
+    M -- ^ --> o([^^])
+    N -- other --> p(["|"])
+    N -- "|" --> q(["||"])
+    N -- = --> r(["|="])
+#+end_src
+
+#+RESULTS:
+[[file:operator.png]]
+*** 数字状态机图
+#+begin_src mermaid :file number.png
+graph LR
+    A -- 1-9 --> E([4])
+    A -- + --> C([2])
+    A([0]) -- 0 --> B([1])
+    A -- - --> C
+    A -- . --> D([3])
+    B -- 0 --> B
+    E -- 0-9 --> E
+    E -- . --> F([5])
+    E -- other --> U([INTEGER])
+    F -- . --> G([error])
+    F -- 0-9 --> H([6])
+    H -- 0-9 --> H
+    H -- . --> J([error])
+    H -- other --> K([FLOAT])
+    D -- 0-9 --> H
+    D -- other --> L([error])
+    B -- 1-9 --> M([7])
+    M -- 0-9 --> M
+    B -- . --> D
+    M -- other --> O([OCT])
+    M -- . --> P([error])
+    B -- x --> R([9])
+    R -- 0-9A-F --> R
+    R -- . --> S([error])
+    R -- other --> T([HEX])
+    C -- 1-9 --> E
+    C -- other --> V([error])
+    C -- 0 --> B
+    C -- . --> D
+    F -- other --> W([FLOAT])
+#+end_src
+
+#+RESULTS:
+[[file:number.png]]
