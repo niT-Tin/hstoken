@@ -206,9 +206,99 @@ impl Token {
      * 从源代码构造操作符
      */
     pub fn make_operator(src: &Vec<char>) -> Token {
+        let mut token = String::from("");
+        let mut it = src.iter().peekable();
+        let mut state = 0;
+        while let Some(&c) = it.peek() {
+            match state {
+                0 => {
+                    match *c {
+                       '+'  => state = 1,
+                        '-' => state = 2,
+                        '*' => state = 3,
+                        '/' => state = 4,
+                        '!' => state = 5,
+                        '=' => state = 6,
+                        '<' => state = 7,
+                        '>' => state = 8,
+                        '%' => state = 9,
+                        '^' => state = 10,
+                        '|' => state = 11,
+                        _ => state = 12,
+                    }
+                }
+                1 => {
+                    if (*c).eq(&'+') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                2 => {
+                    if (*c).eq(&'-') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                3 | 4 | 6 | 9 => {
+                    if (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                5 => {
+                    if (*c).eq(&'^') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                7 => {
+                    if (*c).eq(&'<') || (*c).eq(&'>') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                8 => {
+                    if (*c).eq(&'>') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                10 => {
+                    if (*c).eq(&'^') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                11 => {
+                    if (*c).eq(&'|') || (*c).eq(&'=') {
+                        token.push(*c);
+                        break;
+                    } else {
+                        break;
+                    }
+                },
+                _ => return Token{ttype: TP::ERROR, tvalue: "outer".to_string()}
+            }
+            token.push(*c);
+            it.next();
+        }
         Token {
-            ttype: TP::BOOLEAN,
-            tvalue: String::from(""),
+            ttype: TP::OPERATOR,
+            tvalue: token,
         }
     }
 
