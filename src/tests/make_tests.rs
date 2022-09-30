@@ -240,4 +240,49 @@ mod make_things {
             assert_token(test_tk, res_tk.ttype.clone(), res_tk.tvalue.clone());
         }
     }
+
+    #[test]
+    fn make_operator() {
+        let srcs = vec![
+            "+4".chars().collect::<Vec<char>>(),
+            "--i".chars().collect::<Vec<char>>(),
+            "*5".chars().collect::<Vec<char>>(),
+            "++i".chars().collect::<Vec<char>>(),
+            "+=waef".chars().collect::<Vec<char>>(),
+            "-= ".chars().collect::<Vec<char>>(),
+            "!=wa".chars().collect::<Vec<char>>(),
+            "!= awefawef".chars().collect::<Vec<char>>(),
+            "^^2a3ra ".chars().collect::<Vec<char>>(),
+            "!^aewawf".chars().collect::<Vec<char>>(),
+            "&".chars().collect::<Vec<char>>(),
+            "%=aefaw".chars().collect::<Vec<char>>(),
+            "||awfawe".chars().collect::<Vec<char>>(),
+        ];
+
+        let ress = vec![
+            Token {ttype: TokenType::OPERATOR, tvalue: "+".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "--".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "*".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "++".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "+=".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "-=".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "!=".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "!=".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "^^".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "!^".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "&".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "%=".to_string()},
+            Token {ttype: TokenType::OPERATOR, tvalue: "||".to_string()},
+        ];
+        for is in srcs.iter().enumerate() {
+            let (pos, s) = is;
+            let test_tk = Token::make_operator(s);
+            let res_tk = ress.get(pos).unwrap();
+            print!("test_tk: {:?} ", test_tk);
+            println!("res_tk: {:?}", res_tk);
+            assert_token(test_tk, res_tk.ttype.clone(), res_tk.tvalue.clone());
+        }
+
+    }
+
 }
