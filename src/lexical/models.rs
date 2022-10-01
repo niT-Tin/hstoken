@@ -3,6 +3,9 @@ use std::collections::HashMap;
 use crate::utils::assistant::Assistant;
 
 use self::Tokens::{Token, TokenType};
+use itertools::Itertools;
+use itertools::MultiPeek;
+
 
 /// 词法分析相关model
 pub mod Tokens {
@@ -116,11 +119,12 @@ impl Token {
     /*
      * 从源代码构造变量或者关键字
      */
-    pub fn make_var_keyword(src: &Vec<char>) -> Token {
+    pub fn make_var_keyword(src: &mut MultiPeek<std::slice::Iter<char>>) -> Token {
+    // pub fn make_var_keyword(src: &mut std::slice::Iter<'_, char>) -> Token {
         // 定义用于承接结果的空字符串
         let mut token = String::from("");
         // 获取可peek对象
-        let mut it = src.iter().peekable();
+        let mut it = src;
         // 如果字符流不为空的话不断循环
         while let Some(&c) = it.peek() {
             // 因为进入此函数时说明第一个字符已经不是数字，所以此处
