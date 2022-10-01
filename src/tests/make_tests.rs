@@ -1,5 +1,8 @@
 #[cfg(test)]
 mod make_things {
+    use itertools::{Itertools, MultiPeek};
+    use std::slice::Iter;
+
     use crate::lexical::models::Tokens::{Token, TokenType};
 
     fn assert_token(tk: Token, typ: TokenType, value: String) {
@@ -7,40 +10,72 @@ mod make_things {
         assert!(matches!(tk.ttype, typ) && tk.tvalue.eq(&value));
     }
 
+    fn assert_between_token(tk1: Token, tk2: Token) {
+        assert_token(tk1, tk2.ttype, tk2.tvalue);
+    }
+
     #[test]
     fn make_var_keyword_test() {
-        let src1: Vec<char> = "fun saawefawef".chars().collect();
-        let src2: Vec<char> = "function awefawef".chars().collect();
-        let src3: Vec<char> = "let awefawef".chars().collect();
-        let src4: Vec<char> = "string awefawef".chars().collect();
-        let src5: Vec<char> = "else awefawef".chars().collect();
-        let src6: Vec<char> = "tRUE awefawef".chars().collect();
-        let src7: Vec<char> = "awefawef if ".chars().collect();
-        let src8: Vec<char> = "swef".chars().collect();
-        let src9: Vec<char> = "iawf".chars().collect();
-        let src10: Vec<char> = "varjowaef".chars().collect();
 
-        let tk1 = Token::make_var_keyword(&src1);
-        let tk2 = Token::make_var_keyword(&src2);
-        let tk3 = Token::make_var_keyword(&src3);
-        let tk4 = Token::make_var_keyword(&src4);
-        let tk5 = Token::make_var_keyword(&src5);
-        let tk6 = Token::make_var_keyword(&src6);
-        let tk7 = Token::make_var_keyword(&src7);
-        let tk8 = Token::make_var_keyword(&src8);
-        let tk9 = Token::make_var_keyword(&src9);
-        let tk10 = Token::make_var_keyword(&src10);
+            let r1 = "fun saawefawef"
+            .chars()
+            .collect::<Vec<char>>();
+            let r2 = "function awefawef"
+                .chars()
+                .collect::<Vec<char>>();
+            let r3 = "let awefawef"
+                .chars()
+                .collect::<Vec<char>>();
+            let r4 = "string 0899jlk"
+                .chars()
+                .collect::<Vec<char>>();
+            let r5 = "else awefawef"
+                .chars()
+                .collect::<Vec<char>>();
+            let r6 = "tRUE awefawef"
+                .chars()
+                .collect::<Vec<char>>();
+            let r7 = "awefawef if "
+                .chars()
+                .collect::<Vec<char>>();
+            let r8 = "swef".chars().collect::<Vec<char>>();
+            let r9 = "iawf".chars().collect::<Vec<char>>();
+            let r10 = "varjowaef"
+                .chars()
+                .collect::<Vec<char>>();
+        let mut srcs: [MultiPeek<Iter<char>>; 10] = [
+            r1.iter().multipeek(),
+            r2.iter().multipeek(),
+            r3.iter().multipeek(),
+            r4.iter().multipeek(),
+            r5.iter().multipeek(),
+            r6.iter().multipeek(),
+            r7.iter().multipeek(),
+            r8.iter().multipeek(),
+            r9.iter().multipeek(),
+            r10.iter().multipeek(),
+        ];
 
-        assert_token(tk1, TokenType::KEYWORD, "fun".to_string());
-        assert_token(tk2, TokenType::KEYWORD, "function".to_string());
-        assert_token(tk3, TokenType::KEYWORD, "let".to_string());
-        assert_token(tk4, TokenType::KEYWORD, "string".to_string());
-        assert_token(tk5, TokenType::KEYWORD, "else".to_string());
-        assert_token(tk6, TokenType::BOOLEAN, "tRUE".to_string());
-        assert_token(tk7, TokenType::VARIABLE, "awefawef".to_string());
-        assert_token(tk8, TokenType::VARIABLE, "swef".to_string());
-        assert_token(tk9, TokenType::VARIABLE, "iawf".to_string());
-        assert_token(tk10, TokenType::VARIABLE, "varjowaef".to_string());
+        let res_tk = [
+            Token{ ttype: TokenType::KEYWORD, tvalue: "fun".to_string() },
+            Token{ ttype: TokenType::KEYWORD, tvalue: "function".to_string() },
+            Token{ ttype: TokenType::KEYWORD, tvalue: "let".to_string() },
+            Token{ ttype: TokenType::KEYWORD, tvalue: "string".to_string() },
+            Token{ ttype: TokenType::KEYWORD, tvalue: "else".to_string() },
+            Token{ ttype: TokenType::KEYWORD, tvalue: "tRUE".to_string() },
+            Token{ ttype: TokenType::VARIABLE, tvalue: "awefawef".to_string() },
+            Token{ ttype: TokenType::VARIABLE, tvalue: "swef".to_string() },
+            Token{ ttype: TokenType::VARIABLE, tvalue: "iawf".to_string() },
+            Token{ ttype: TokenType::VARIABLE, tvalue: "varjowaef".to_string() },
+        ];
+
+        for ts in srcs.iter_mut().enumerate() {
+            let (i, t) = ts;
+            let test_tk = Token::make_var_keyword(t);
+            let ans_tk = res_tk.get(i).unwrap();
+            assert_between_token(test_tk, ans_tk.clone());
+        }
+
     }
 
     #[test]
@@ -260,19 +295,58 @@ mod make_things {
         ];
 
         let ress = vec![
-            Token {ttype: TokenType::OPERATOR, tvalue: "+".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "--".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "*".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "++".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "+=".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "-=".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "!=".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "!=".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "^^".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "!^".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "&".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "%=".to_string()},
-            Token {ttype: TokenType::OPERATOR, tvalue: "||".to_string()},
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "+".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "--".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "*".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "++".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "+=".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "-=".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "!=".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "!=".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "^^".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "!^".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "&".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "%=".to_string(),
+            },
+            Token {
+                ttype: TokenType::OPERATOR,
+                tvalue: "||".to_string(),
+            },
         ];
         for is in srcs.iter().enumerate() {
             let (pos, s) = is;
@@ -282,7 +356,5 @@ mod make_things {
             println!("res_tk: {:?}", res_tk);
             assert_token(test_tk, res_tk.ttype.clone(), res_tk.tvalue.clone());
         }
-
     }
-
 }
