@@ -4,7 +4,7 @@ mod alpha_test {
     use crate::utils::assistant::Assistant;
 
     #[test]
-    fn assiatant_letter() {
+    fn assistant_letter() {
         assert_eq!(true, Assistant.is_letter(&'a'));
         assert_eq!(true, Assistant.is_letter(&'l'));
         assert_eq!(true, Assistant.is_letter(&'D'));
@@ -13,14 +13,14 @@ mod alpha_test {
     }
 
     #[test]
-    fn assiatant_number() {
+    fn assistant_number() {
         assert_eq!(true, Assistant.is_number(&'0'));
         assert_eq!(true, Assistant.is_number(&'8'));
         assert_eq!(false, Assistant.is_number(&'a'));
     }
 
     #[test]
-    fn assiatant_literal() {
+    fn assistant_literal() {
         assert_eq!(true, Assistant.is_literal(&'a'));
         assert_eq!(true, Assistant.is_literal(&'_'));
         assert_eq!(true, Assistant.is_literal(&'A'));
@@ -28,7 +28,7 @@ mod alpha_test {
     }
 
     #[test]
-    fn assiatant_operator() {
+    fn assistant_operator() {
         assert_eq!(true, Assistant.is_operator(&'+'));
         assert_eq!(true, Assistant.is_operator(&'-'));
         assert_eq!(true, Assistant.is_operator(&'&'));
@@ -42,7 +42,7 @@ mod alpha_test {
     }
 
     #[test]
-    fn assiatant_range() {
+    fn assistant_range() {
         assert_eq!(true, Assistant.in07(&'6'));
         assert_eq!(true, Assistant.in07(&'7'));
         assert_eq!(true, Assistant.in07(&'0'));
@@ -76,5 +76,22 @@ mod alpha_test {
         assert_eq!(true, Assistant.in09af(&'A'));
         assert_eq!(true, Assistant.in09af(&'F'));
         assert_eq!(false, Assistant.in09af(&'Z'));
+    }
+
+    #[test]
+    fn assistant_blank_bracket() {
+        assert_eq!(true, Assistant.is_blank(&' '));
+        assert_eq!(true, Assistant.is_blank(&'\n'));
+        assert_eq!(false, Assistant.is_blank(&'s'));
+
+        assert_eq!(true, Assistant.is_bracket(&'('));
+        assert_eq!(true, Assistant.is_bracket(&'{'));
+        assert_eq!(true, Assistant.is_bracket(&'['));
+        assert_eq!(false, Assistant.is_bracket(&'a'));
+        assert_eq!(true, Assistant.is_bracket(&']'));
+        assert_eq!(true, Assistant.is_bracket(&')'));
+        assert_eq!(false, Assistant.is_bracket(&'9'));
+        assert_eq!(false, Assistant.is_bracket(&' '));
+        assert_eq!(true, Assistant.is_bracket(&'}'));
     }
 }

@@ -1,16 +1,18 @@
 #[cfg(test)]
-mod make_things {
-    use itertools::{Itertools, MultiPeek};
-    use std::{borrow::BorrowMut, slice::Iter};
+pub mod make_things {
+    use itertools::Itertools;
 
-    use crate::lexical::models::Tokens::{Token, TokenType};
+    use crate::{
+        base::base::PPUTKIterator,
+        lexical::models::Tokens::{Token, TokenType},
+    };
 
-    fn assert_token(tk: Token, typ: TokenType, value: String) {
+    pub fn assert_token(tk: Token, typ: TokenType, value: String) {
         // println!("The value is: {}", value);
         assert!(matches!(tk.ttype, typ) && tk.tvalue.eq(&value));
     }
 
-    fn assert_between_token(tk1: Token, tk2: Token) {
+    pub fn assert_between_token(tk1: Token, tk2: Token) {
         assert_token(tk1, tk2.ttype, tk2.tvalue);
     }
 
@@ -26,17 +28,17 @@ mod make_things {
         let r8 = "swef".chars().collect::<Vec<char>>();
         let r9 = "iawf".chars().collect::<Vec<char>>();
         let r10 = "varjowaef".chars().collect::<Vec<char>>();
-        let mut srcs: [MultiPeek<Iter<char>>; 10] = [
-            r1.iter().multipeek(),
-            r2.iter().multipeek(),
-            r3.iter().multipeek(),
-            r4.iter().multipeek(),
-            r5.iter().multipeek(),
-            r6.iter().multipeek(),
-            r7.iter().multipeek(),
-            r8.iter().multipeek(),
-            r9.iter().multipeek(),
-            r10.iter().multipeek(),
+        let mut srcs: [PPUTKIterator<char>; 10] = [
+            PPUTKIterator::new(r1.iter()),
+            PPUTKIterator::new(r2.iter()),
+            PPUTKIterator::new(r3.iter()),
+            PPUTKIterator::new(r4.iter()),
+            PPUTKIterator::new(r5.iter()),
+            PPUTKIterator::new(r6.iter()),
+            PPUTKIterator::new(r7.iter()),
+            PPUTKIterator::new(r8.iter()),
+            PPUTKIterator::new(r9.iter()),
+            PPUTKIterator::new(r10.iter()),
         ];
 
         let res_tk = [
@@ -113,14 +115,14 @@ mod make_things {
         let src7: Vec<char> = "'This is;' a string".chars().collect();
         let src8: Vec<char> = "\"stop string\"awefwaef awaefawef".chars().collect();
 
-        let mut src1 = src1.iter().multipeek();
-        let mut src2 = src2.iter().multipeek();
-        let mut src3 = src3.iter().multipeek();
-        let mut src4 = src4.iter().multipeek();
-        let mut src5 = src5.iter().multipeek();
-        let mut src6 = src6.iter().multipeek();
-        let mut src7 = src7.iter().multipeek();
-        let mut src8 = src8.iter().multipeek();
+        let mut src1 = PPUTKIterator::new(src1.iter());
+        let mut src2 = PPUTKIterator::new(src2.iter());
+        let mut src3 = PPUTKIterator::new(src3.iter());
+        let mut src4 = PPUTKIterator::new(src4.iter());
+        let mut src5 = PPUTKIterator::new(src5.iter());
+        let mut src6 = PPUTKIterator::new(src6.iter());
+        let mut src7 = PPUTKIterator::new(src7.iter());
+        let mut src8 = PPUTKIterator::new(src8.iter());
 
         let tk1 = Token::make_string(&mut src1);
         let tk2 = Token::make_string(&mut src2);
@@ -201,27 +203,27 @@ mod make_things {
         let src18 = String::from("-awefweaf").chars().collect::<Vec<char>>();
         let src19 = String::from("-325344").chars().collect::<Vec<char>>();
         let src20 = String::from("-.325344").chars().collect::<Vec<char>>();
-        let srcs = vec![
-            src1.iter().multipeek(),
-            src2.iter().multipeek(),
-            src3.iter().multipeek(),
-            src4.iter().multipeek(),
-            src5.iter().multipeek(),
-            src6.iter().multipeek(),
-            src7.iter().multipeek(),
-            src8.iter().multipeek(),
-            src9.iter().multipeek(),
-            src10.iter().multipeek(),
-            src11.iter().multipeek(),
-            src12.iter().multipeek(),
-            src13.iter().multipeek(),
-            src14.iter().multipeek(),
-            src15.iter().multipeek(),
-            src16.iter().multipeek(),
-            src17.iter().multipeek(),
-            src18.iter().multipeek(),
-            src19.iter().multipeek(),
-            src20.iter().multipeek(),
+        let mut srcs = vec![
+            PPUTKIterator::new(src1.iter()),
+            PPUTKIterator::new(src2.iter()),
+            PPUTKIterator::new(src3.iter()),
+            PPUTKIterator::new(src4.iter()),
+            PPUTKIterator::new(src5.iter()),
+            PPUTKIterator::new(src6.iter()),
+            PPUTKIterator::new(src7.iter()),
+            PPUTKIterator::new(src8.iter()),
+            PPUTKIterator::new(src9.iter()),
+            PPUTKIterator::new(src10.iter()),
+            PPUTKIterator::new(src11.iter()),
+            PPUTKIterator::new(src12.iter()),
+            PPUTKIterator::new(src13.iter()),
+            PPUTKIterator::new(src14.iter()),
+            PPUTKIterator::new(src15.iter()),
+            PPUTKIterator::new(src16.iter()),
+            PPUTKIterator::new(src17.iter()),
+            PPUTKIterator::new(src18.iter()),
+            PPUTKIterator::new(src19.iter()),
+            PPUTKIterator::new(src20.iter()),
         ];
         let res = vec![
             Token {
@@ -307,9 +309,9 @@ mod make_things {
         ];
         // println!("srcs len: {}", srcs.len());
         // println!("res len: {}", res.len());
-        for is in srcs.into_iter().enumerate() {
-            let (pos, mut s) = is;
-            let test_tk = Token::make_number(&mut s);
+        for is in srcs.iter_mut().enumerate() {
+            let (pos, s) = is;
+            let test_tk = Token::make_number(s);
             let res_tk = res.get(pos).unwrap();
             // print!("test_tk: {:?} ", test_tk);
             // println!("res_tk: {:?}", res_tk);
@@ -333,20 +335,20 @@ mod make_things {
         let src12 = "%=aefaw".chars().collect::<Vec<char>>();
         let src13 = "||awfawe".chars().collect::<Vec<char>>();
 
-        let srcs = vec![
-           src1.iter().multipeek(),
-           src2.iter().multipeek(),
-           src3.iter().multipeek(),
-           src4.iter().multipeek(),
-           src5.iter().multipeek(),
-           src6.iter().multipeek(),
-           src7.iter().multipeek(),
-           src8.iter().multipeek(),
-           src9.iter().multipeek(),
-           src10.iter().multipeek(),
-           src11.iter().multipeek(),
-           src12.iter().multipeek(),
-           src13.iter().multipeek(),
+        let mut srcs = vec![
+            PPUTKIterator::new(src1.iter()),
+            PPUTKIterator::new(src2.iter()),
+            PPUTKIterator::new(src3.iter()),
+            PPUTKIterator::new(src4.iter()),
+            PPUTKIterator::new(src5.iter()),
+            PPUTKIterator::new(src6.iter()),
+            PPUTKIterator::new(src7.iter()),
+            PPUTKIterator::new(src8.iter()),
+            PPUTKIterator::new(src9.iter()),
+            PPUTKIterator::new(src10.iter()),
+            PPUTKIterator::new(src11.iter()),
+            PPUTKIterator::new(src12.iter()),
+            PPUTKIterator::new(src13.iter()),
         ];
 
         let ress = vec![
@@ -403,9 +405,9 @@ mod make_things {
                 tvalue: "||".to_string(),
             },
         ];
-        for is in srcs.into_iter().enumerate() {
-            let (pos, mut s) = is;
-            let test_tk = Token::make_operator(&mut s);
+        for is in srcs.iter_mut().enumerate() {
+            let (pos, s) = is;
+            let test_tk = Token::make_operator(s);
             let res_tk = ress.get(pos).unwrap();
             print!("test_tk: {:?} ", test_tk);
             println!("res_tk: {:?}", res_tk);
