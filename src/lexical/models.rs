@@ -236,7 +236,12 @@ impl Token {
                     '%' => state = 9,
                     '^' => state = 10,
                     '|' => state = 11,
-                    _ => state = 12,
+                    ',' | ';' => {
+                        token.push(*c);
+                        it.next();
+                        break;
+                    },
+                    _ => state = 14,
                 },
                 1 => {
                     if (*c).eq(&'+') || (*c).eq(&'=') {
