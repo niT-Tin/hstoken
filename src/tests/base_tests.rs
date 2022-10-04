@@ -21,7 +21,6 @@ mod base_tests {
         assert_eq!(ppuk.peek().unwrap(), &'C');
         assert_eq!(ppuk.peek().unwrap(), &'C');
 
-
         assert_eq!(ppuk.next().unwrap(), &'C');
         assert_eq!(ppuk.next().unwrap(), &'D');
         assert_eq!(ppuk.next().unwrap(), &'E');
@@ -36,7 +35,5 @@ mod base_tests {
             println!("{:?}", s);
             ppuk.next();
         }
-
-
     }
 }
