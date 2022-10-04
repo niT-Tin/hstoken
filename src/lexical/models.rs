@@ -1,11 +1,8 @@
 use std::collections::HashMap;
 
-use crate::utils::assistant::Assistant;
+use crate::{base::base::PPUTKIterator, utils::assistant::Assistant};
 
 use self::Tokens::{Token, TokenType};
-use itertools::MultiPeek;
-use std::slice::Iter;
-
 
 /// 词法分析相关model
 pub mod Tokens {
@@ -116,7 +113,6 @@ impl Token {
         matches!(self.ttype, TP::INTEGER | TP::FLOAT)
     }
 
-
     /*
      * 判断是否为操作符
      **/
@@ -134,12 +130,12 @@ impl Token {
     /*
      * 从源代码构造变量或者关键字
      */
-    pub fn make_var_keyword(it: &mut MultiPeek<Iter<char>>) -> Token {
-    // pub fn make_var_keyword(src: &mut std::slice::Iter<'_, char>) -> Token {
+    pub fn make_var_keyword(it: &mut PPUTKIterator<char>) -> Token {
+        // pub fn make_var_keyword(src: &mut std::slice::Iter<'_, char>) -> Token {
         // 定义用于承接结果的空字符串
         let mut token = String::from("");
         // 如果字符流不为空的话不断循环
-        while let Some(&c) = it.peek() {
+        while let Some(c) = it.peek() {
             // 因为进入此函数时说明第一个字符已经不是数字，所以此处
             // 判断c是不是literal而不是先判断c是不是letter
             if Assistant.is_literal(c) {
@@ -173,7 +169,7 @@ impl Token {
     /*
      * 从源代码构造字符串
      */
-    pub fn make_string(it: &mut MultiPeek<Iter<char>>) -> Token {
+    pub fn make_string(it: &mut PPUTKIterator<char>) -> Token {
         // 定义用于承接结果的空字符串
         let mut token = String::from("");
         // 状态机状态
@@ -183,7 +179,7 @@ impl Token {
             DQUOT, // 双引号状态
         }
         let mut state = STATE::START;
-        while let Some(&c) = it.peek() {
+        while let Some(c) = it.peek() {
             match state {
                 STATE::START => {
                     if (*c).eq(&'"') {
@@ -223,93 +219,105 @@ impl Token {
     /*
      * 从源代码构造操作符
      */
-    pub fn make_operator(it: &mut MultiPeek<Iter<char>>) -> Token {
+    pub fn make_operator(it: &mut PPUTKIterator<char>) -> Token {
         let mut token = String::from("");
         let mut state = 0;
-        while let Some(&c) = it.peek() {
+        while let Some(c) = it.peek() {
             match state {
-                0 => {
-                    match *c {
-                       '+'  => state = 1,
-                        '-' => state = 2,
-                        '*' => state = 3,
-                        '/' => state = 4,
-                        '!' => state = 5,
-                        '=' => state = 6,
-                        '<' => state = 7,
-                        '>' => state = 8,
-                        '%' => state = 9,
-                        '^' => state = 10,
-                        '|' => state = 11,
-                        _ => state = 12,
-                    }
-                }
+                0 => match *c {
+                    '+' => state = 1,
+                    '-' => state = 2,
+                    '*' => state = 3,
+                    '/' => state = 4,
+                    '!' => state = 5,
+                    '=' => state = 6,
+                    '<' => state = 7,
+                    '>' => state = 8,
+                    '%' => state = 9,
+                    '^' => state = 10,
+                    '|' => state = 11,
+                    _ => state = 12,
+                },
                 1 => {
                     if (*c).eq(&'+') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 2 => {
                     if (*c).eq(&'-') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 3 | 4 | 6 | 9 => {
                     if (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 5 => {
                     if (*c).eq(&'^') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 7 => {
                     if (*c).eq(&'<') || (*c).eq(&'>') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 8 => {
                     if (*c).eq(&'>') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 10 => {
                     if (*c).eq(&'^') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
+                }
                 11 => {
                     if (*c).eq(&'|') || (*c).eq(&'=') {
                         token.push(*c);
+                        it.next();
                         break;
                     } else {
                         break;
                     }
-                },
-                _ => return Token{ttype: TP::ERROR, tvalue: "outer".to_string()}
+                }
+                _ => {
+                    return Token {
+                        ttype: TP::ERROR,
+                        tvalue: "outer".to_string(),
+                    }
+                }
             }
+            // 此处的两行代码只有在state为0时运行
             token.push(*c);
             it.next();
         }
@@ -322,11 +330,11 @@ impl Token {
     /*
      * 从源代码构造数字
      */
-    pub fn make_number(it: &mut MultiPeek<Iter<char>>) -> Token {
+    pub fn make_number(it: &mut PPUTKIterator<char>) -> Token {
         let mut token = String::from("");
         let mut state = 0;
 
-        while let Some(&c) = it.peek() {
+        while let Some(c) = it.peek() {
             match state {
                 0 => {
                     if Assistant.in19(c) {
@@ -483,7 +491,10 @@ impl Token {
         // 判断是从那个有结果的分支出来的
         match res_map.get(&state) {
             // 如果是有结果的分支，则返回对应结果
-            Some(s) => Token { ttype: (*s).clone(), tvalue: token },
+            Some(s) => Token {
+                ttype: (*s).clone(),
+                tvalue: token,
+            },
             // 如果没有结果则返回错误
             None => Token {
                 ttype: TP::ERROR,
