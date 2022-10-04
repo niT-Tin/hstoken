@@ -13,6 +13,11 @@ mod lexical_tests {
         let src1 = "(a+b)^100.12==+100-20";
 
         let tokens = Lexical::analyse(&src1.chars().collect::<Vec<char>>());
+        println!("================== geted tokens ==================");
+        for tks in &tokens {
+            println!("geted token: {:?}", tks);
+        }
+        println!("================== geted tokens ==================");
         let tk1 = Token{ttype: TokenType::BRACKET, tvalue: "(".to_string()};
         let tk2 = Token{ttype: TokenType::VARIABLE, tvalue: "a".to_string()};
         let tk3 = Token{ttype: TokenType::OPERATOR, tvalue: "+".to_string()};

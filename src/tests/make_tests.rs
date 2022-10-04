@@ -1,6 +1,5 @@
 #[cfg(test)]
 pub mod make_things {
-    use itertools::Itertools;
 
     use crate::{
         base::base::PPUTKIterator,
@@ -409,8 +408,8 @@ pub mod make_things {
             let (pos, s) = is;
             let test_tk = Token::make_operator(s);
             let res_tk = ress.get(pos).unwrap();
-            print!("test_tk: {:?} ", test_tk);
-            println!("res_tk: {:?}", res_tk);
+            // print!("test_tk: {:?} ", test_tk);
+            // println!("res_tk: {:?}", res_tk);
             assert_token(test_tk, res_tk.ttype.clone(), res_tk.tvalue.clone());
         }
     }
