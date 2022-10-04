@@ -17,7 +17,7 @@ lazy_static! {
     /*
      * 运算符正则表达式
      */
-    static ref REOPERATOR: Regex = Regex::new(r"^[+\-\\*/|!<>&^,;]$").unwrap();
+    static ref REOPERATOR: Regex = Regex::new(r"^[+\-\\*/|!<>&^,;=]$").unwrap();
     // static ref REOPERATOR: Regex = Regex::new(r"(\+|-|\*|/|\||!|<|>|&|\^|,|;)").unwrap();
     /*
      * 匹配[0-9]的数字
