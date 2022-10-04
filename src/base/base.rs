@@ -58,6 +58,7 @@ impl<'a, char> Iterator for PPUTKIterator<'a, char> {
             // 加入peek缓存，以备putback使用
             let res = self.putbk.pop_back();
             if let Some(r) = res {
+                // 此处再次放回peek缓存是因为可能存在再次putback的情况
                 self.peekc.push_back(r);
             }
             return res;
