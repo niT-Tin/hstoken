@@ -22,23 +22,31 @@ lazy_static! {
     /*
      * 匹配[0-9]的数字
      */
-    static ref RANGE09: Regex = Regex::new(r"[0-9]$").unwrap();
+    static ref RANGE09: Regex = Regex::new(r"^[0-9]$").unwrap();
     /*
      * 匹配[1-9]的数字
      */
-    static ref RANGE19: Regex = Regex::new(r"[1-9]$").unwrap();
+    static ref RANGE19: Regex = Regex::new(r"^[1-9]$").unwrap();
     /*
      * 匹配[0-7]的数字
      */
-    static ref RANGE07: Regex = Regex::new(r"[0-7]$").unwrap();
+    static ref RANGE07: Regex = Regex::new(r"^[0-7]$").unwrap();
     /*
      * 匹配[1-7]的数字
      */
-    static ref RANGE17: Regex = Regex::new(r"[1-7]$").unwrap();
+    static ref RANGE17: Regex = Regex::new(r"^[1-7]$").unwrap();
     /*
      * 匹配十六进制数字面值
      */
-    static ref RANGE09AF: Regex = Regex::new(r"[0-9A-F]$").unwrap();
+    static ref RANGE09AF: Regex = Regex::new(r"^[0-9A-F]$").unwrap();
+    /*
+     * 匹配空白符
+     */
+    static ref REBLANK: Regex = Regex::new(r"^\s$").unwrap();
+    /*
+     * 匹配括号
+     */
+    static ref REBRACKET: Regex = Regex::new(r"^[{}()\[\]]$").unwrap();
 }
 
 pub struct Assistant;
@@ -57,6 +65,16 @@ impl Assistant {
     // 判读字符是否为字面值
     pub fn is_literal(&self, src: &char) -> bool {
         RELITERAL.is_match(&src.to_string())
+    }
+
+    // 判断字符是否为空白符
+    pub fn is_blank(&self, src: &char) -> bool {
+        REBLANK.is_match(&src.to_string())
+    }
+
+    // 判断字符是否为括号
+    pub fn is_bracket(&self, src: &char) -> bool {
+        REBRACKET.is_match(&src.to_string())
     }
 
     // 判读字符是否为操作符
