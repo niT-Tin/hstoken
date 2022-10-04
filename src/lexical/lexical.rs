@@ -17,7 +17,6 @@ impl Lexical {
         let mut pk_iter = PPUTKIterator::new(iter);
         // 不断peek字符判断不同类型构建不同类型Token
         while let Some(s) = pk_iter.next() {
-
             // 忽略空白符
             if Assistant.is_blank(s) {
                 continue;
@@ -93,15 +92,55 @@ impl Lexical {
             }
 
             // 删除注释
-            // if (*s).eq(&'/') {
-            //     // 删除当前 符号 /
-            //     pk_iter.next();
-            //     while let Some(&s) = pk_iter.peek() {
-            //         if (*s).ne(&'\n') {
-
-            //         }
-            //     }
-            // }
+            if (*s).eq(&'/') {
+                if let Some(s) = pk_iter.peek() {
+                    // 此处表明是当行双斜线注释 //
+                    if (*s).eq(&'/') {
+                        loop {
+                            if let Some(s) = pk_iter.next() {
+                                if (*s).eq(&'\n') {
+                                    break;
+                                } else {
+                                    continue;
+                                }
+                            }
+                        }
+                        continue;
+                        // 此处表明是多行注释
+                    } else if (*s).eq(&'*') {
+                        loop {
+                            if let Some(_) = pk_iter.next() {
+                                let end = pk_iter.peek();
+                                match end {
+                                    Some(cs) => {
+                                        if (*cs).eq(&'*') {
+                                            pk_iter.next();
+                                            let ed = pk_iter.peek();
+                                            match ed {
+                                                Some(d) => {
+                                                    if (*d).eq(&'/') {
+                                                        pk_iter.next();
+                                                        break;
+                                                    } else {
+                                                        continue;
+                                                    }
+                                                }
+                                                None => {
+                                                    panic!("Comment error");
+                                                }
+                                            }
+                                        }
+                                    }
+                                    None => {
+                                        panic!("Comment error");
+                                    }
+                                };
+                            }
+                        }
+                        continue;
+                    }
+                }
+            }
 
             // 构建操作符
             if Assistant.is_operator(s) {
