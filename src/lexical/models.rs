@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use crate::utils::assistant::Assistant;
 
 use self::Tokens::{Token, TokenType};
-use itertools::Itertools;
 use itertools::MultiPeek;
+use std::slice::Iter;
 
 
 /// 词法分析相关model
@@ -110,6 +110,21 @@ impl Token {
     }
 
     /*
+     * 判断是否为数字
+     */
+    pub fn is_number(&self) -> bool {
+        matches!(self.ttype, TP::INTEGER | TP::FLOAT)
+    }
+
+
+    /*
+     * 判断是否为操作符
+     **/
+    pub fn is_operator(&self) -> bool {
+        matches!(self.ttype, TP::OPERATOR)
+    }
+
+    /*
      * 判断是否为变量
      **/
     pub fn is_variable(&self) -> bool {
@@ -119,12 +134,10 @@ impl Token {
     /*
      * 从源代码构造变量或者关键字
      */
-    pub fn make_var_keyword(src: &mut MultiPeek<std::slice::Iter<char>>) -> Token {
+    pub fn make_var_keyword(it: &mut MultiPeek<Iter<char>>) -> Token {
     // pub fn make_var_keyword(src: &mut std::slice::Iter<'_, char>) -> Token {
         // 定义用于承接结果的空字符串
         let mut token = String::from("");
-        // 获取可peek对象
-        let mut it = src;
         // 如果字符流不为空的话不断循环
         while let Some(&c) = it.peek() {
             // 因为进入此函数时说明第一个字符已经不是数字，所以此处
@@ -137,6 +150,7 @@ impl Token {
             }
             it.next();
         }
+        // 单独判断是否为tRUE或者fALSE
         if token == String::from("tRUE") || token == String::from("fALSE") {
             Token {
                 ttype: TP::BOOLEAN,
@@ -159,7 +173,7 @@ impl Token {
     /*
      * 从源代码构造字符串
      */
-    pub fn make_string(src: &Vec<char>) -> Token {
+    pub fn make_string(it: &mut MultiPeek<Iter<char>>) -> Token {
         // 定义用于承接结果的空字符串
         let mut token = String::from("");
         // 状态机状态
@@ -169,8 +183,6 @@ impl Token {
             DQUOT, // 双引号状态
         }
         let mut state = STATE::START;
-        // 获取可peek对象
-        let mut it = src.iter().peekable();
         while let Some(&c) = it.peek() {
             match state {
                 STATE::START => {
@@ -185,6 +197,7 @@ impl Token {
                 STATE::SQUOT => {
                     if (*c).eq(&'\'') {
                         token.push(*c);
+                        it.next();
                         break;
                     }
                     token.push(*c);
@@ -193,6 +206,7 @@ impl Token {
                 STATE::DQUOT => {
                     if (*c).eq(&'"') {
                         token.push(*c);
+                        it.next();
                         break;
                     }
                     token.push(*c);
@@ -209,9 +223,8 @@ impl Token {
     /*
      * 从源代码构造操作符
      */
-    pub fn make_operator(src: &Vec<char>) -> Token {
+    pub fn make_operator(it: &mut MultiPeek<Iter<char>>) -> Token {
         let mut token = String::from("");
-        let mut it = src.iter().peekable();
         let mut state = 0;
         while let Some(&c) = it.peek() {
             match state {
@@ -309,10 +322,9 @@ impl Token {
     /*
      * 从源代码构造数字
      */
-    pub fn make_number(src: &Vec<char>) -> Token {
+    pub fn make_number(it: &mut MultiPeek<Iter<char>>) -> Token {
         let mut token = String::from("");
         let mut state = 0;
-        let mut it = src.iter().peekable();
 
         while let Some(&c) = it.peek() {
             match state {
