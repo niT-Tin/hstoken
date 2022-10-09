@@ -1,22 +1,22 @@
 use std::collections::LinkedList;
 use std::slice::Iter;
 
-pub struct PPUTKIterator<'a, char> {
+pub struct PPUTKIterator<'a, T> {
     // peek缓存
     // 用于和putback缓存进行交互，
     // 实现在putback中的从next缓存中取元素放回putback缓存
     // 而不用实际调用next方法
-    peekc: LinkedList<&'a char>,
+    peekc: LinkedList<&'a T>,
     // putback缓存
-    putbk: LinkedList<&'a char>,
+    putbk: LinkedList<&'a T>,
     // 缓存大小
     buffer_size: usize,
     // 字符流
-    stream: Iter<'a, char>,
+    stream: Iter<'a, T>,
 }
 
-impl<'a, char> PPUTKIterator<'a, char> {
-    pub fn new(iter: Iter<'a, char>) -> Self {
+impl<'a, T> PPUTKIterator<'a, T> {
+    pub fn new(iter: Iter<'a, T>) -> Self {
         let pkc = LinkedList::new();
         let pbk = LinkedList::new();
         PPUTKIterator {
@@ -33,25 +33,25 @@ impl<'a, char> PPUTKIterator<'a, char> {
             let pk = self.peekc.pop_back();
             match pk {
                 Some(p) => self.putbk.push_back(p),
-                None => {},
+                None => {}
             }
         }
     }
 
-    pub fn peek(&mut self) -> Option<&char> {
+    pub fn peek(&mut self) -> Option<&T> {
         let res = self.next();
         match res {
             Some(s) => {
                 self.put_back();
                 Some(s)
-            },
+            }
             None => None,
         }
     }
 }
 
-impl<'a, char> Iterator for PPUTKIterator<'a, char> {
-    type Item = &'a char;
+impl<'a, T> Iterator for PPUTKIterator<'a, T> {
+    type Item = &'a T;
     fn next(&mut self) -> Option<Self::Item> {
         // 如果putback的缓存不为空，则再次调用next的时候返回putback缓存中的数据
         if self.putbk.len() != 0usize {
@@ -78,5 +78,4 @@ impl<'a, char> Iterator for PPUTKIterator<'a, char> {
             None => None,
         }
     }
-
 }
