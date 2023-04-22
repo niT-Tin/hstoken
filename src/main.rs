@@ -1,7 +1,7 @@
 fn main() {
     println!("Hello, world!");
     println!("");
-    for i in (1..10).step_by(2) {
+    (1..10).step_by(2).for_each(|i| {
         println!("{}", i);
-    }
+    });
 }
